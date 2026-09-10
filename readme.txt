@@ -1,28 +1,17 @@
-npm install express cors @google/genai
-Initialize the Gemini API client using the environment variable
-export GEMINI_API_KEY="your-api-key-here" // this is 
-production-ready Node.js Express endpoint using the official @google/genai SDK that receives your telemetry context, calls Gemini 2.5 Flash, and streams back the incident investigation report in real time using Server-Sent Events (SSE).
-npm install ssh2
+This project is a AMAZEN N Series Smart Network Dashboard that uses AI to monitor, troubleshoot, and automatically secure a company's computer network.
 
-AI integration : You can test both the AI Investigation and Automated Control endpoints using curl or VS Code's REST Client extension.
+Think of it as a highly advanced traffic control center for internet data. Instead of forcing human engineers to manually dig through thousands of logs to find problems, the AI does the heavy lifting.
 
+Here is how the system works, step-by-step:
 
-.. test investigate using AI
-curl -X POST http://localhost:3001/api/investigate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "triggeringEvent": {
-      "id": "ALT-9902",
-      "timestamp": "2026-09-09T21:45:00Z",
-      "indicatorType": "Data Exfiltration Anomaly",
-      "severity": "CRITICAL",
-      "sourceIp": "192.168.10.45",
-      "destinationIp": "198.51.100.14",
-      "protocol": "TCP/443",
-      "rawDescription": "Unusual outbound data spike exceeding baseline by 450%."
-    },
-    "surroundingTelemetryContext": {
-      "activeDevices": [{ "name": "EDGE-GW-01", "type": "Firewall", "status": "WARN", "metrics": { "cpuUsagePct": 88, "throughputGbps": 9.4 } }],
-      "applicationMonitors": [{ "app": "Banking API", "latencyMs": 340, "packetLossPct": 2.1 }]
-    }
-  }'
+The Watcher (Deep Packet Inspection): It acts like a smart tollbooth on a highway. It doesn't look at private data (the passengers in the cars), but it categorizes the traffic. It knows if the data is a video call, an important banking transaction, or a suspicious file transfer.
+
+The Brain (AI Analysis): It constantly analyzes this traffic to spot problems. It will instantly notice if a critical business app is running too slowly, or if a compromised computer is secretly talking to a hacker's server.
+
+The Plain-English Translator (Executive Summary): Instead of showing you a wall of confusing code, you can click a single button ("What is happening on my network?"). The AI looks at everything and gives you a simple, prioritized summary—like "Video traffic is causing a jam, and one computer is acting suspicious. Fix the computer first."
+
+The Fixer (Automated Controls): When the system finds a problem, it automatically writes the technical rules needed to fix it—such as creating a "fast lane" for banking traffic, or instantly blocking a hacker's IP address.
+
+The Sandbox (Simulation): Before making any real changes that could accidentally break the internet for the whole company, the dashboard lets administrators hit "Apply Simulation" to safely test the AI's recommended fixes in a virtual environment.
+
+In short, it takes the highly complex, manual job of network management and turns it into an intelligent, point-and-click AI assistant.
