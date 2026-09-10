@@ -8,7 +8,7 @@ The Watcher (Deep Packet Inspection): It acts like a smart tollbooth on a highwa
 
 The Brain (AI Analysis): It constantly analyzes this traffic to spot problems. It will instantly notice if a critical business app is running too slowly, or if a compromised computer is secretly talking to a hacker's server.
 
-The Plain-English Translator (Executive Summary): Instead of showing you a wall of confusing code, you can click a single button ("What is happening on my network?"). The AI looks at everything and gives you a simple, prioritized summary—like "Video traffic is causing a jam, and one computer is acting suspicious. Fix the computer first."
+Executive Summary: Instead of showing you a wall of confusing code, you can click a single button ("What is happening on my network?"). The AI looks at everything and gives you a simple, prioritized summary—like "Video traffic is causing a jam, and one computer is acting suspicious. Fix the computer first."
 
 The Fixer (Automated Controls): When the system finds a problem, it automatically writes the technical rules needed to fix it—such as creating a "fast lane" for banking traffic, or instantly blocking a hacker's IP address.
 
