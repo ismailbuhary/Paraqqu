@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazen N-Series | Network Intelligence & Control Solutions</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonts: Inter & JetBrains Mono for enterprise grade readability -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            noc: {
+              bg: '#04070d',       /* Deep obsidian navy background */
+              panel: '#090e17',    /* Card/panel elevation background */
+              border: '#152033',   /* High-precision border color */
+              borderHover: '#223452',
+              muted: '#475569',    /* Muted text color */
+              text: '#94a3b8',     /* Default body text color */
+              heading: '#f1f5f9',  /* Enterprise white typography */
+              cyan: '#0ea5e9',     /* Primary telemetry glow */
+              emerald: '#10b981',  /* Health operational green */
+              amber: '#f59e0b',    /* Warning state amber */
+              rose: '#f43f5e',     /* Critical state red */
+              purple: '#8b5cf6'    /* Application classification purple */
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* NOC/SOC Specialized Custom Styling */
+    body {
+      background-color: #04070d;
+      color: #94a3b8;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    /* Subtle Technical Grid Background Pattern */
+    .noc-grid {
+      background-image: 
+        linear-gradient(to right, rgba(21, 32, 51, 0.4) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(21, 32, 51, 0.4) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Radar Scanning Sweep Keyframes */
+    @keyframes radar-sweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-sweep-line {
+      transform-origin: 250px 150px;
+      animation: radar-sweep 12s linear infinite;
+    }
+
+    /* Precision Custom Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #04070d; }
+    ::-webkit-scrollbar-thumb { background: #152033; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #223452; }
+
+    /* Active Nav Tab Styling */
+    .nav-item-active {
+      background-color: rgba(14, 165, 233, 0.08);
+      border-left: 2px solid #0ea5e9;
+      color: #f1f5f9 !important;
+    }
+
+    /* Status Pulse Animation */
+    .pulse-indicator {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
+</head>
+<body class="font-sans text-xs antialiased h-screen flex flex-col overflow-hidden noc-grid select-none">
+
+  <!-- ================= TOP NOC/SOC COMMAND BAR ================= -->
+  <header class="h-12 bg-noc-panel border-b border-noc-border px-4 flex items-center justify-between shrink-0 z-30">
+    <!-- Brand Identity & Enterprise Subtitle -->
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-6 h-6 rounded bg-noc-cyan/10 border border-noc-cyan/40 flex items-center justify-center">
+          <i class="fa-solid fa-network-wired text-noc-cyan text-xs"></i>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="font-bold text-noc-heading text-sm tracking-wider uppercase">Amazen N-Series</span>
+          <span class="text-[10px] text-noc-muted uppercase font-mono tracking-widest hidden lg:inline">Network Intelligence & Control Solutions</span>
+        </div>
+      </div>
+      <div class="h-4 w-px bg-noc-border hidden sm:block"></div>
+      <div class="hidden sm:flex items-center space-x-2 text-[10px] font-mono text-noc-text">
+        <span class="px-1.5 py-0.5 rounded bg-noc-border/60 border border-noc-border">TENANT: TELECOM-GLOBAL-01</span>
+        <span class="px-1.5 py-0.5 rounded bg-noc-border/60 border border-noc-border text-noc-cyan">ENGINE: ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- Live System Telemetry Status Controls -->
+    <div class="flex items-center space-x-6 font-mono text-[11px]">
+      <div class="hidden md:flex items-center space-x-4 border-r border-noc-border pr-6">
+        <div>
+          <span class="text-noc-muted">INGRESS:</span> 
+          <span class="text-noc-heading font-semibold ml-1">842.6 Gbps</span>
+        </div>
+        <div>
+          <span class="text-noc-muted">LATENCY:</span> 
+          <span class="text-noc-cyan font-semibold ml-1">4.2 ms</span>
+        </div>
+        <div>
+          <span class="text-noc-muted">SLA:</span> 
+          <span class="text-noc-emerald font-semibold ml-1">99.999%</span>
+        </div>
+      </div>
+
+      <!-- Live Clock & Status Badge -->
+      <div class="flex items-center space-x-3">
+        <div class="text-right">
+          <div id="noc-time" class="text-noc-heading font-semibold leading-tight">18:53:49 UTC</div>
+          <div class="text-[9px] text-noc-muted">2026-09-09</div>
+        </div>
+        <div class="flex items-center space-x-1.5 px-2 py-1 bg-noc-emerald/10 border border-noc-emerald/30 rounded text-[10px] font-semibold text-noc-emerald">
+          <span class="w-1.5 h-1.5 rounded-full bg-noc-emerald pulse-indicator"></span>
+          <span>NOC OPERATIONAL</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE LAYOUT ================= -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- LEFT SIDEBAR NAVIGATION (NOC / SOC MODULE CONTROLLER) -->
+    <aside class="w-56 bg-noc-panel border-r border-noc-border flex flex-col justify-between shrink-0 z-20">
+      <div>
+        <!-- Tagline Banner -->
+        <div class="p-3 border-b border-noc-border bg-noc-bg/40">
+          <p class="text-[9px] font-mono text-noc-cyan uppercase tracking-wide leading-tight">System Mandate</p>
+          <p class="text-[11px] font-semibold text-noc-heading mt-0.5 leading-snug">Full Visibility and Control Over Your Network Traffic.</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-2 space-y-0.5">
+          <div class="px-2 py-1.5 text-[9px] font-mono tracking-widest text-noc-muted uppercase font-bold">Primary Operations</div>
+
+          <button onclick="switchTab('executive')" id="nav-executive" class="nav-item nav-item-active w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-chart-line w-4 text-noc-cyan"></i>
+            <span class="font-medium text-xs">Executive Overview</span>
+          </button>
+
+          <button onclick="switchTab('health')" id="nav-health" class="nav-item w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-heart-pulse w-4 text-noc-emerald"></i>
+            <span class="font-medium text-xs">Network Health</span>
+          </button>
+
+          <button onclick="switchTab('application')" id="nav-application" class="nav-item w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-cubes w-4 text-noc-purple"></i>
+            <span class="font-medium text-xs">Application Intelligence</span>
+          </button>
+
+          <button onclick="switchTab('traffic')" id="nav-traffic" class="nav-item w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-network-wired w-4 text-noc-cyan"></i>
+            <span class="font-medium text-xs">Traffic Analytics</span>
+          </button>
+
+          <div class="px-2 py-1.5 pt-3 text-[9px] font-mono tracking-widest text-noc-muted uppercase font-bold">Threat & Control</div>
+
+          <button onclick="switchTab('security')" id="nav-security" class="nav-item w-full flex items-center justify-between px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-shield-halved w-4 text-noc-rose"></i>
+              <span class="font-medium text-xs">Security Intelligence</span>
+            </div>
+            <span class="bg-noc-rose/20 text-noc-rose font-mono text-[9px] px-1 rounded font-bold">12</span>
+          </button>
+
+          <button onclick="switchTab('anomaly')" id="nav-anomaly" class="nav-item w-full flex items-center justify-between px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <div class="flex items-center space-x-2.5">
+              <i class="fa-solid fa-triangle-exclamation w-4 text-noc-amber"></i>
+              <span class="font-medium text-xs">Anomaly Detection</span>
+            </div>
+            <span class="bg-noc-amber/20 text-noc-amber font-mono text-[9px] px-1 rounded font-bold">3</span>
+          </button>
+
+          <button onclick="switchTab('ai')" id="nav-ai" class="nav-item w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-microchip w-4 text-indigo-400"></i>
+            <span class="font-medium text-xs">AI Network Assistant</span>
+          </button>
+
+          <button onclick="switchTab('control')" id="nav-control" class="nav-item w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-noc-text hover:text-noc-heading hover:bg-noc-border/30 transition">
+            <i class="fa-solid fa-sliders w-4 text-teal-400"></i>
+            <span class="font-medium text-xs">Network Control</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Infrastructure Status Sub-panel -->
+      <div class="p-3 border-t border-noc-border bg-noc-bg/60 font-mono text-[10px]">
+        <div class="flex justify-between items-center text-noc-muted mb-1">
+          <span>FABRIC STATUS</span>
+          <span class="text-noc-emerald">SYNCHRONIZED</span>
+        </div>
+        <div class="w-full bg-noc-border h-1 rounded overflow-hidden">
+          <div class="bg-noc-cyan h-full w-[88%]"></div>
+        </div>
+        <div class="flex justify-between text-noc-muted mt-2 text-[9px]">
+          <span>Nodes: 14,280</span>
+          <span>BGP Peer: 100%</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER DASHBOARD DISPLAY CANVAS -->
+    <main class="flex-1 overflow-y-auto p-4 space-y-4">
+
+      <!-- ================= SECTION 1: EXECUTIVE OVERVIEW ================= -->
+      <div id="section-executive" class="tab-content space-y-4">
+        
+        <!-- HIGH-CONTRAST ENTERPRISE KPI CARDS (2x4 GRID) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          
+          <!-- KPI 1: Overall Network Health -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Overall Network Health</span>
+              <i class="fa-solid fa-heart-pulse text-noc-emerald"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">99.98%</span>
+              <span class="text-[10px] text-noc-emerald font-mono font-semibold">+0.02%</span>
+            </div>
+            <div class="w-full bg-noc-bg h-1 rounded-full mt-2 overflow-hidden border border-noc-border">
+              <div class="bg-noc-emerald h-full w-[99.98%]"></div>
+            </div>
+          </div>
+
+          <!-- KPI 2: Total Network Traffic -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Total Network Traffic</span>
+              <i class="fa-solid fa-chart-line text-noc-cyan"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">842.6 <span class="text-xs text-noc-muted font-normal">Gbps</span></span>
+              <span class="text-[10px] text-noc-cyan font-mono font-semibold">1.2 Tbps Peak</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">Ingress: 482G | Egress: 360G</p>
+          </div>
+
+          <!-- KPI 3: Active Devices -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Active Devices</span>
+              <i class="fa-solid fa-server text-indigo-400"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">14,280</span>
+              <span class="text-[10px] text-noc-emerald font-mono font-semibold">100% Online</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">Switches, Routers & Edge</p>
+          </div>
+
+          <!-- KPI 4: Active Applications -->
+          <div class="bg-brand-panel bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Active Applications</span>
+              <i class="fa-solid fa-cubes text-noc-purple"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">1,842</span>
+              <span class="text-[10px] text-noc-purple font-mono font-semibold">DPI Class</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">SWIFT, FIX, SIP & Web</p>
+          </div>
+
+          <!-- KPI 5: Security Events -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Security Events (24h)</span>
+              <i class="fa-solid fa-shield-cat text-noc-rose"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">1,409</span>
+              <span class="text-[10px] text-noc-rose font-mono font-semibold">12 High Priority</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">Auto Scrubbed: 98.4%</p>
+          </div>
+
+          <!-- KPI 6: Detected Anomalies -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Detected Anomalies</span>
+              <i class="fa-solid fa-triangle-exclamation text-noc-amber"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-amber tracking-tight">3 Active</span>
+              <span class="text-[10px] text-noc-muted font-mono">ML Baseline</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">1 Flapping, 2 Asymmetric</p>
+          </div>
+
+          <!-- KPI 7: Network Availability -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Network Availability</span>
+              <i class="fa-solid fa-gauge-high text-teal-400"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">99.999%</span>
+              <span class="text-[10px] text-noc-emerald font-mono font-semibold">Carrier Class</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">5 Nines Target Met</p>
+          </div>
+
+          <!-- KPI 8: Packet Loss / Jitter -->
+          <div class="bg-noc-panel p-3 rounded border border-noc-border hover:border-noc-borderHover transition">
+            <div class="flex justify-between items-center text-noc-muted font-mono text-[10px]">
+              <span class="uppercase">Packet Loss & Jitter</span>
+              <i class="fa-solid fa-wave-square text-noc-cyan"></i>
+            </div>
+            <div class="flex items-baseline space-x-2 mt-2">
+              <span class="text-2xl font-bold font-mono text-noc-heading tracking-tight">0.0001%</span>
+              <span class="text-[10px] text-noc-cyan font-mono font-semibold">0.12 ms Jitter</span>
+            </div>
+            <p class="text-[10px] text-noc-muted mt-1 font-mono">Ultra-low FinTech Latency</p>
+          </div>
+        </div>
+
+        <!-- MIDDLE ROW: SOPHISTICATED TOPOLOGY MAP & REAL-TIME FLOW CHART -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          
+          <!-- SOPHISTICATED NETWORK TOPOLOGY VISUALIZATION (RADAR & NODE MAP) -->
+          <div class="lg:col-span-2 bg-noc-panel p-4 rounded border border-noc-border flex flex-col justify-between relative overflow-hidden">
+            <div class="flex justify-between items-center pb-3 border-b border-noc-border z-10">
+              <div>
+                <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase">Global Enterprise Backbone Topology</h3>
+                <p class="text-[10px] text-noc-muted">Amazen N-Series Real-Time Core Node Mesh & Peering Connectivity</p>
+              </div>
+              <div class="flex items-center space-x-2 font-mono text-[10px]">
+                <span class="flex items-center text-noc-emerald"><span class="w-2 h-2 rounded-full bg-noc-emerald mr-1"></span> Core</span>
+                <span class="flex items-center text-noc-cyan"><span class="w-2 h-2 rounded-full bg-noc-cyan mr-1"></span> Edge</span>
+                <span class="flex items-center text-noc-amber"><span class="w-2 h-2 rounded-full bg-noc-amber mr-1"></span> Peer Exchange</span>
+              </div>
+            </div>
+
+            <!-- SVG Topology Interactive Graph Surface -->
+            <div class="h-64 relative my-2 flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 500 300" fill="none">
+                <!-- Background Grid Coordinates -->
+                <circle cx="250" cy="150" r="120" stroke="#152033" stroke-width="1" stroke-dasharray="4 4" />
+                <circle cx="250" cy="150" r="70" stroke="#152033" stroke-width="1" stroke-dasharray="2 2" />
+                <line x1="250" y1="10" x2="250" y2="290" stroke="#152033" stroke-width="1" />
+                <line x1="10" y1="150" x2="490" y2="150" stroke="#152033" stroke-width="1" />
+
+                <!-- Radar Scan Vector -->
+                <line x1="250" y1="150" x2="370" y2="150" stroke="#0ea5e9" stroke-width="1.5" class="radar-sweep-line opacity-40" />
+
+                <!-- Network Trunk Interconnect Vectors -->
+                <path d="M 110 80 L 250 150 L 390 80 L 410 220 L 250 150 L 90 220 Z" stroke="#0ea5e9" stroke-width="1.5" stroke-opacity="0.4" />
+                <path d="M 110 80 L 390 80 M 90 220 L 410 220" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="3 3" />
+
+                <!-- Nodes: Core Data Centers -->
+                <!-- NYC Core Node -->
+                <g class="cursor-pointer">
+                  <circle cx="250" cy="150" r="10" fill="#090e17" stroke="#10b981" stroke-width="2.5" />
+                  <circle cx="250" cy="150" r="4" fill="#10b981" />
+                  <text x="250" y="175" text-anchor="middle" fill="#f1f5f9" font-family="JetBrains Mono" font-size="9" font-weight="bold">NYC-CORE-01</text>
+                  <text x="250" y="185" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="7">380 Gbps</text>
+                </g>
+
+                <!-- London Gateway Node -->
+                <g class="cursor-pointer">
+                  <circle cx="110" cy="80" r="8" fill="#090e17" stroke="#0ea5e9" stroke-width="2" />
+                  <circle cx="110" cy="80" r="3" fill="#0ea5e9" />
+                  <text x="110" y="65" text-anchor="middle" fill="#f1f5f9" font-family="JetBrains Mono" font-size="8">LON-GW-02</text>
+                </g>
+
+                <!-- Frankfurt Node -->
+                <g class="cursor-pointer">
+                  <circle cx="390" cy="80" r="8" fill="#090e17" stroke="#0ea5e9" stroke-width="2" />
+                  <circle cx="390" cy="80" r="3" fill="#0ea5e9" />
+                  <text x="390" y="65" text-anchor="middle" fill="#f1f5f9" font-family="JetBrains Mono" font-size="8">FRA-GW-01</text>
+                </g>
+
+                <!-- Tokyo Node -->
+                <g class="cursor-pointer">
+                  <circle cx="410" cy="220" r="7" fill="#090e17" stroke="#f59e0b" stroke-width="2" />
+                  <circle cx="410" cy="220" r="2.5" fill="#f59e0b" />
+                  <text x="410" y="237" text-anchor="middle" fill="#f1f5f9" font-family="JetBrains Mono" font-size="8">TYO-EDGE-04</text>
+                </g>
+
+                <!-- Singapore Node -->
+                <g class="cursor-pointer">
+                  <circle cx="90" cy="220" r="7" fill="#090e17" stroke="#10b981" stroke-width="2" />
+                  <circle cx="90" cy="220" r="2.5" fill="#10b981" />
+                  <text x="90" y="237" text-anchor="middle" fill="#f1f5f9" font-family="JetBrains Mono" font-size="8">SGP-CORE-02</text>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Footer Telemetry Strip -->
+            <div class="pt-2 border-t border-noc-border flex justify-between items-center font-mono text-[10px] text-noc-muted">
+              <span>BGP Mesh: 256 Active Paths</span>
+              <span>Subsea Cable Utilization: 62%</span>
+              <span class="text-noc-cyan">Auto-Reroute Active</span>
+            </div>
+          </div>
+
+          <!-- TRAFFIC THROUGHPUT & APPS DISTRIBUTION CHART -->
+          <div class="bg-noc-panel p-4 rounded border border-noc-border flex flex-col justify-between">
+            <div class="flex justify-between items-center pb-3 border-b border-noc-border">
+              <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase">Application Traffic Distribution</h3>
+              <i class="fa-solid fa-chart-pie text-noc-purple text-xs"></i>
+            </div>
+            <div class="h-56 relative my-2">
+              <canvas id="topAppsChart"></canvas>
+            </div>
+            <div class="pt-2 border-t border-noc-border flex justify-between text-noc-muted font-mono text-[9px]">
+              <span>DPI Inspection: Layer 7</span>
+              <span class="text-noc-heading font-semibold">1,842 Protocols Identified</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BOTTOM ROW: TOP TRAFFIC SOURCES & SECURITY THREAT FEED -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          <!-- TOP TRAFFIC SOURCES TABLE -->
+          <div class="bg-noc-panel p-4 rounded border border-noc-border">
+            <div class="flex justify-between items-center pb-3 border-b border-noc-border mb-3">
+              <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase">Top Enterprise Traffic Sources</h3>
+              <span class="text-[10px] font-mono text-noc-cyan">NetFlow v9/IPFIX Stream</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono text-[11px]">
+                <thead>
+                  <tr class="text-noc-muted border-b border-noc-border">
+                    <th class="pb-2">Subnet / Route</th>
+                    <th class="pb-2">Enterprise Sector</th>
+                    <th class="pb-2">Protocol</th>
+                    <th class="pb-2 text-right">Throughput</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-noc-border/50 text-noc-heading">
+                  <tr>
+                    <td class="py-2 flex items-center space-x-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-noc-cyan"></span>
+                      <span>10.240.12.0/24</span>
+                    </td>
+                    <td class="text-noc-muted">FinTech Trading Core</td>
+                    <td class="text-noc-purple">FIX Protocol</td>
+                    <td class="text-right font-bold text-noc-cyan">214 Gbps</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 flex items-center space-x-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-noc-emerald"></span>
+                      <span>172.16.88.0/20</span>
+                    </td>
+                    <td class="text-noc-muted">Cloud Transit Gateway</td>
+                    <td class="text-noc-cyan">HTTPS / TLS 1.3</td>
+                    <td class="text-right font-bold text-noc-heading">182 Gbps</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 flex items-center space-x-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-noc-purple"></span>
+                      <span>192.168.100.0/24</span>
+                    </td>
+                    <td class="text-noc-muted">Banking ATM Edge</td>
+                    <td class="text-noc-amber">IPSec VPN</td>
+                    <td class="text-right font-bold text-noc-heading">98 Gbps</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 flex items-center space-x-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-noc-amber"></span>
+                      <span>10.10.45.0/24</span>
+                    </td>
+                    <td class="text-noc-muted">Telecom Carrier Voice</td>
+                    <td class="text-teal-400">SIP / RTP</td>
+                    <td class="text-right font-bold text-noc-heading">74 Gbps</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RECENT SECURITY THREAT EVENTS FEED -->
+          <div class="bg-noc-panel p-4 rounded border border-noc-border">
+            <div class="flex justify-between items-center pb-3 border-b border-noc-border mb-3">
+              <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase">SOC Threat Intelligence Stream</h3>
+              <span class="text-[10px] font-mono text-noc-rose">DDoS & Intrusion Engine</span>
+            </div>
+            <div class="space-y-2 font-mono text-[11px]">
+              <div class="p-2 bg-noc-bg rounded border-l-2 border-noc-rose flex justify-between items-center">
+                <div>
+                  <div class="text-noc-rose font-bold">Volumetric SYN Flood Suppressed</div>
+                  <div class="text-noc-muted text-[10px]">Target: 10.240.12.88 • Vector: 42 Gbps UDP Reflection</div>
+                </div>
+                <span class="text-noc-muted text-[10px]">2m ago</span>
+              </div>
+              <div class="p-2 bg-noc-bg rounded border-l-2 border-noc-amber flex justify-between items-center">
+                <div>
+                  <div class="text-noc-amber font-bold">Asymmetric Route Flapping Detected</div>
+                  <div class="text-noc-muted text-[10px]">BGP Peer ASN-4812 Flapping • Auto Holddown Initiated</div>
+                </div>
+                <span class="text-noc-muted text-[10px]">14m ago</span>
+              </div>
+              <div class="p-2 bg-noc-bg rounded border-l-2 border-noc-emerald flex justify-between items-center">
+                <div>
+                  <div class="text-noc-emerald font-bold">Mutual TLS Mutual Auth Renewed</div>
+                  <div class="text-noc-muted text-[10px]">Gateway-US-East-01 • Zero Trust Cert Sync Successful</div>
+                </div>
+                <span class="text-noc-muted text-[10px]">1h ago</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= SECTION 2: NETWORK HEALTH ================= -->
+      <div id="section-health" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">Core Switching & Routing Node Matrix</h3>
+          <p class="text-noc-muted text-xs mb-4">Amazen N-Series Active Hardware Health & Processing Load</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px]">
+              <thead>
+                <tr class="text-noc-muted border-b border-noc-border">
+                  <th class="p-2">Node Hostname</th>
+                  <th class="p-2">Role</th>
+                  <th class="p-2">Location</th>
+                  <th class="p-2">CPU Utilization</th>
+                  <th class="p-2">Memory Load</th>
+                  <th class="p-2">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-noc-border/50 text-noc-heading">
+                <tr>
+                  <td class="p-2 font-bold text-noc-cyan">N-CORE-NYC-01</td>
+                  <td class="p-2 text-noc-muted">Backbone Core Gateway</td>
+                  <td class="p-2">New York, US</td>
+                  <td class="p-2">28%</td>
+                  <td class="p-2">41%</td>
+                  <td class="p-2"><span class="px-1.5 py-0.5 bg-noc-emerald/20 text-noc-emerald rounded">OPERATIONAL</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-noc-cyan">N-CORE-LON-02</td>
+                  <td class="p-2 text-noc-muted">Primary Exchange Router</td>
+                  <td class="p-2">London, UK</td>
+                  <td class="p-2">62%</td>
+                  <td class="p-2">58%</td>
+                  <td class="p-2"><span class="px-1.5 py-0.5 bg-noc-emerald/20 text-noc-emerald rounded">OPERATIONAL</span></td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-noc-amber">N-EDGE-SGP-04</td>
+                  <td class="p-2 text-noc-muted">FinTech Edge Gateway</td>
+                  <td class="p-2">Singapore</td>
+                  <td class="p-2">88%</td>
+                  <td class="p-2">79%</td>
+                  <td class="p-2"><span class="px-1.5 py-0.5 bg-noc-amber/20 text-noc-amber rounded">HIGH LOAD</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 3: APPLICATION INTELLIGENCE ================= -->
+      <div id="section-application" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">Deep Packet Inspection (DPI) Prioritization</h3>
+          <p class="text-noc-muted text-xs mb-4">Traffic classification profiles enforced across the enterprise backbone.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono">
+            <div class="p-3 bg-noc-bg rounded border border-noc-border">
+              <div class="text-noc-muted text-[10px]">SWIFT Financial Wire</div>
+              <div class="text-noc-cyan font-bold text-sm mt-1">Priority Class: EF</div>
+              <div class="text-noc-muted text-[10px] mt-2">Latency: &lt; 1.8 ms</div>
+            </div>
+            <div class="p-3 bg-noc-bg rounded border border-noc-border">
+              <div class="text-noc-muted text-[10px]">FinTech Trading FIX</div>
+              <div class="text-noc-emerald font-bold text-sm mt-1">Priority Class: AF41</div>
+              <div class="text-noc-muted text-[10px] mt-2">Throughput: 214 Gbps</div>
+            </div>
+            <div class="p-3 bg-noc-bg rounded border border-noc-border">
+              <div class="text-noc-muted text-[10px]">Carrier Voice Telecom</div>
+              <div class="text-noc-purple font-bold text-sm mt-1">Priority Class: Realtime</div>
+              <div class="text-noc-muted text-[10px] mt-2">Jitter: 0.12 ms</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 4: TRAFFIC ANALYTICS ================= -->
+      <div id="section-traffic" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">NetFlow v9 & IPFIX Flow Analysis</h3>
+          <p class="text-noc-muted text-xs">Real-time flow aggregation from 14,280 active exporters.</p>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 5: SECURITY INTEL ================= -->
+      <div id="section-security" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">SOC Threat Shield & DDoS Scrubbing</h3>
+          <p class="text-noc-muted text-xs">Automated volumetric DDoS suppression and protocol anomaly mitigation.</p>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 6: ANOMALY DETECTION ================= -->
+      <div id="section-anomaly" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">Machine Learning Statistical Baseline Alerts</h3>
+          <p class="text-noc-muted text-xs">Unsupervised behavioral anomaly detection across standard network baselines.</p>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 7: AI NETWORK ASSISTANT ================= -->
+      <div id="section-ai" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border flex flex-col h-96">
+          <div class="pb-3 border-b border-noc-border">
+            <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase">Amazen AI Network Diagnostics Copilot</h3>
+            <p class="text-noc-muted text-[10px]">Natural language interface for queries, topology diagnostics, and route optimization.</p>
+          </div>
+          <div class="flex-1 overflow-y-auto p-3 font-mono text-xs space-y-3">
+            <div class="p-2.5 bg-noc-bg border border-noc-border text-noc-text rounded max-w-xl">
+              <span class="text-indigo-400 font-bold">[Amazen Copilot]:</span> Telemetry verified across all core nodes. Network health is at 99.98%. Zero BGP route hijacking detected.
+            </div>
+          </div>
+          <div class="pt-2 border-t border-noc-border flex space-x-2">
+            <input type="text" placeholder="Enter diagnostic command or query..." class="flex-1 bg-noc-bg border border-noc-border rounded px-3 py-1.5 text-xs text-noc-heading font-mono focus:outline-none focus:border-noc-cyan">
+            <button class="px-4 py-1.5 bg-noc-cyan text-noc-bg font-bold font-mono text-xs rounded hover:bg-sky-400">EXECUTE</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 8: NETWORK CONTROL ================= -->
+      <div id="section-control" class="tab-content hidden space-y-4">
+        <div class="bg-noc-panel p-4 rounded border border-noc-border">
+          <h3 class="font-bold text-noc-heading text-xs tracking-wider uppercase mb-2">Network Control & Policy Enforcement</h3>
+          <p class="text-noc-muted text-xs mb-4">Execute policy modifications across edge routers, scrubbers, and QoS engines.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono">
+            <div class="p-3 bg-noc-bg rounded border border-noc-border flex justify-between items-center">
+              <div>
+                <div class="text-noc-heading font-bold text-xs">Dynamic QoS FinTech Acceleration</div>
+                <div class="text-noc-muted text-[10px]">Automatically prioritize SWIFT & FIX during congestion</div>
+              </div>
+              <span class="px-2 py-1 bg-noc-emerald/20 text-noc-emerald text-[10px] rounded font-bold">ENABLED</span>
+            </div>
+            <div class="p-3 bg-noc-bg rounded border border-noc-border flex justify-between items-center">
+              <div>
+                <div class="text-noc-heading font-bold text-xs">Automated BGP Blackholing</div>
+                <div class="text-noc-muted text-[10px]">Instant null-route on &gt;100 Gbps volumetric attacks</div>
+              </div>
+              <span class="px-2 py-1 bg-noc-emerald/20 text-noc-emerald text-[10px] rounded font-bold">ENABLED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ================= INTERACTIVE NOC CONTROLLER LOGIC ================= -->
+  <script>
+    // Tab Controller Function
+    function switchTab(tabId) {
+      // Hide all section canvases
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+      // Remove active class from all nav buttons
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('nav-item-active');
+      });
+
+      // Show selected section canvas
+      const targetSection = document.getElementById('section-' + tabId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+
+      // Highlight corresponding navigation item
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.classList.add('nav-item-active');
+      }
+    }
+
+    // Live Clock Function (UTC NOC Format)
+    function updateClock() {
+      const now = new Date();
+      const utcString = now.toUTCString().split(' ')[4];
+      document.getElementById('noc-time').innerText = utcString + ' UTC';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Chart.js Professional High-Contrast Data Visualization Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      // Application Distribution Doughnut Chart
+      const ctxApps = document.getElementById('topAppsChart').getContext('2d');
+      new Chart(ctxApps, {
+        type: 'doughnut',
+        data: {
+          labels: ['FinTech (FIX/SWIFT)', 'Encrypted HTTPS/Web', 'Carrier Voice (SIP)', 'Storage & Backup', 'Other Protocols'],
+          datasets: [{
+            data: [42, 28, 15, 10, 5],
+            backgroundColor: ['#0ea5e9', '#8b5cf6', '#10b981', '#f59e0b', '#152033'],
+            borderColor: '#090e17',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#94a3b8',
+                font: { size: 10, family: 'JetBrains Mono' },
+                boxWidth: 10,
+                padding: 12
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

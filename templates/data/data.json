@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kafka_Network_Telemetry_Event",
+  "type": "object",
+  "required": ["event_id", "schema_version", "timestamp", "partition_key", "payload"],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "schema_version": { "type": "string", "example": "1.0.0" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "partition_key": { "type": "string" },
+    "payload_type": { "type": "string", "enum": ["device_metric", "app_metric", "security_alert"] },
+    "payload": { "type": "object" }
+  }
+}
