@@ -1,4 +1,4 @@
-This project is a AMAZEN N Series Smart Network Dashboard that uses AI to monitor, troubleshoot, and automatically secure a company's computer network.
+This project called AMAZEN N Series Smart Network Dashboard that uses AI to monitor, troubleshoot, and automatically secure a company's computer network.
 
 Think of it as a highly advanced traffic control center for internet data. Instead of forcing human engineers to manually dig through thousands of logs to find problems, the AI does the heavy lifting.
 
